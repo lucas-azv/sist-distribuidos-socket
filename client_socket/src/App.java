@@ -6,23 +6,19 @@ import java.net.Socket;
 
 public class App {
     public static void main(String[] args) throws Exception {
-        System.out.println("Hello, World!");
         Socket conexao = new Socket("127.0.0.1", 2001);
 
         try (DataInputStream entrada = new DataInputStream(conexao.getInputStream());
                 DataOutputStream saida = new DataOutputStream(conexao.getOutputStream());
                 BufferedReader teclado = new BufferedReader(new InputStreamReader(System.in))) {
-            while (true) {
+           
+            ThreadInput thread = new ThreadInput(entrada);
+            new Thread(thread).start();
+
+            while(true){
                 System.out.print("> ");
                 String linha = teclado.readLine();
                 saida.writeUTF(linha);
-
-                linha = entrada.readUTF();
-                if (linha.isEmpty()) {
-                    System.out.println("Conexão encerrada");
-                    break;
-                }
-                System.out.println(linha);
             }
         }
     }
